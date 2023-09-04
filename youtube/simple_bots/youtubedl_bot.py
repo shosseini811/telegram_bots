@@ -24,7 +24,6 @@ def send_welcome(message):
     bot.reply_to(message, "Hello! Welcome to the YouTube Downloader bot. Just send a YouTube URL to download videos.")
 
 @bot.message_handler(func=lambda message: True)
-@bot.message_handler(func=lambda message: True)
 def download_video(message):
     youtube_url_pattern = r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})'
     url_match = re.search(youtube_url_pattern, message.text)
