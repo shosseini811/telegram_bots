@@ -1,0 +1,26 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main  # or the name of your default branch if it's not 'main'
+    paths:
+      - 'youtube/simple_bots/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > /tmp/ssh_key
+          chmod 600 /tmp/ssh_key
+          cd youtube/simple_bots
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key" --include='*.py' --include='README.md' --include='requirements.txt' --include='bot.log' --exclude='*' ./ ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:~
