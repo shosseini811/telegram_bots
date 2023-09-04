@@ -6,6 +6,7 @@ on:
       - main  # or the name of your default branch if it's not 'main'
     paths:
       - 'youtube/simple_bots/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
