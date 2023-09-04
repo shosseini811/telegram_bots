@@ -1,5 +1,5 @@
 
-# Deploying Telegram YouTube Downloader Bot on AWS EC2
+# Deploying Telegram YouTube/Instagram Downloader Bot on AWS EC2
 
 ## Step-by-Step Instructions:
 
