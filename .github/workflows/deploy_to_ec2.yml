@@ -30,7 +30,6 @@ jobs:
           else
             REQ_CHANGED=0
           fi
-          ...
           ssh -i /tmp/ssh_key -o ServerAliveInterval=60 -o ServerAliveCountMax=5 ${{ env.EC2_USER }}@${{ env.EC2_HOST }} 'chmod +x update_script.sh'
           ssh -i /tmp/ssh_key -o ServerAliveInterval=60 -o ServerAliveCountMax=5 ${{ env.EC2_USER }}@${{ env.EC2_HOST }} REQ_CHANGED=$REQ_CHANGED 'bash -s' < update_script.sh
           
