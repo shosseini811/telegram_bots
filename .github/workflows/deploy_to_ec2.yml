@@ -1,12 +1,11 @@
-name: Deploy to EC2
+name: Deploy to EC2 and Restart
 
 on:
   push:
     branches:
-      - main  # or the name of your default branch if it's not 'main'
+      - main
     paths:
       - 'youtube/simple_bots/**'
-  workflow_dispatch:
 
 jobs:
   deploy:
@@ -24,4 +23,5 @@ jobs:
           echo "$PRIVATE_KEY" > /tmp/ssh_key
           chmod 600 /tmp/ssh_key
           cd youtube/simple_bots
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key" --include='*.py' --include='README.md' --include='requirements.txt' --include='bot.log' --exclude='*' ./ ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:~
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key" --exclude='downloads/' --exclude='test1.ipynb' * ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:~
+          ssh -i /tmp/ssh_key ${{ env.EC2_USER }}@${{ env.EC2_HOST }} 'bash -s' < update_script.sh
