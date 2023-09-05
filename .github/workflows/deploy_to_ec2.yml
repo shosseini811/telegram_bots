@@ -26,4 +26,5 @@ jobs:
           chmod 600 /tmp/ssh_key
           cd youtube/simple_bots
           rsync -avz -e "ssh -o StrictHostKeyChecking=no -i /tmp/ssh_key" --exclude='downloads/' --exclude='test1.ipynb' * ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:~
+          ssh -i /tmp/ssh_key ${{ env.EC2_USER }}@${{ env.EC2_HOST }} 'chmod +x update_script.sh'
           ssh -i /tmp/ssh_key ${{ env.EC2_USER }}@${{ env.EC2_HOST }} 'bash -s' < update_script.sh
