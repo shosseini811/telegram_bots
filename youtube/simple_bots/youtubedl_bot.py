@@ -18,8 +18,10 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
-# Get the bot token from environment variables
+# Get the bot token and Instagram credentials from environment variables
 bot_token = os.getenv('BOT_TOKEN')
+# INSTAGRAM_USERNAME = os.getenv('INSTAGRAM_USERNAME')
+# INSTAGRAM_PASSWORD = os.getenv('INSTAGRAM_PASSWORD')
 
 # Define the directory where videos will be saved
 download_dir = './downloads'
@@ -31,8 +33,18 @@ bot = telebot.TeleBot(bot_token)
 YOUTUBE_URL_PATTERN = r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})'
 INSTAGRAM_URL_PATTERN = r'https://www.instagram.com/(p|reel)/[A-Za-z0-9_-]+/'
 
-# Initialize the instaloader instance
+session = requests.Session()
+session.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+
 L = instaloader.Instaloader()
+L.context._session = session
+# # Initialize the instaloader instance
+# L = instaloader.Instaloader(session=session)
+# # time.sleep(10)  # sleep for 5 seconds
+# # # Login to Instagram
+# # L.login(INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD)
+
+
 
 # Define the welcome message to be sent when the bot starts
 @bot.message_handler(commands=['start', 'help'])

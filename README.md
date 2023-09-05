@@ -1,3 +1,4 @@
+[![Deploy to EC2 and Restart](https://github.com/shosseini811/telegram_bots/actions/workflows/deploy_to_ec2.yml/badge.svg)](https://github.com/shosseini811/telegram_bots/actions/workflows/deploy_to_ec2.yml)
 
 # Deploying Telegram YouTube Downloader Bot on AWS EC2
 
