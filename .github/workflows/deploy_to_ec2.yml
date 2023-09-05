@@ -1,11 +1,13 @@
 name: Deploy to EC2 and Restart
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'youtube/simple_bots/**'
+    push:
+        branches:
+        - main
+        paths:
+        - 'youtube/simple_bots/**'
+    workflow_dispatch:
+
 
 jobs:
   deploy:
