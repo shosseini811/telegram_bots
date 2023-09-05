@@ -20,8 +20,8 @@ load_dotenv()
 
 # Get the bot token and Instagram credentials from environment variables
 bot_token = os.getenv('BOT_TOKEN')
-INSTAGRAM_USERNAME = os.getenv('INSTAGRAM_USERNAME')
-INSTAGRAM_PASSWORD = os.getenv('INSTAGRAM_PASSWORD')
+# INSTAGRAM_USERNAME = os.getenv('INSTAGRAM_USERNAME')
+# INSTAGRAM_PASSWORD = os.getenv('INSTAGRAM_PASSWORD')
 
 # Define the directory where videos will be saved
 download_dir = './downloads'
@@ -42,7 +42,7 @@ L.context._session = session
 # L = instaloader.Instaloader(session=session)
 # # time.sleep(10)  # sleep for 5 seconds
 # # # Login to Instagram
-L.login(INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD)
+# L.login(INSTAGRAM_USERNAME, INSTAGRAM_PASSWORD)
 
 
 
