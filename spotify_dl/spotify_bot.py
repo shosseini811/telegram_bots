@@ -32,15 +32,27 @@ def get_most_recently_downloaded_file():
     files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
     return files[0] if files else None
 
-def extract_song_name_from_output(output):
-    match = re.search(r'Skipping (.*?) \(file already exists\)', output)
-    return match.group(1).replace(' ', '_') + '.mp3' if match else None
+def extract_song_details_from_output(output):
+    # Extract singer and song name
+    match = re.search(r'Skipping (.*?) - (.*?) \(file already exists\)', output)
+    if match:
+        singer = match.group(1)
+        song_name = match.group(2).replace(' ', '_') + '.mp3'
+        return singer, song_name
+    return None, None
 
 @bot.message_handler(func=lambda message: True)
 def handle_song_link(message):
     link = message.text
     result = os.popen(f'python -m spotdl {link}').read()
-    song_path = extract_song_name_from_output(result) if "file already exists" in result else get_most_recently_downloaded_file()
+    singer, song_path = extract_song_details_from_output(result)
+    if not singer or not song_path:
+        song_path = get_most_recently_downloaded_file()
+    else:
+        # Create directory based on singer's name
+        if not os.path.exists(singer):
+            os.makedirs(singer)
+        song_path = os.path.join(singer, song_path)
 
     if not song_path or not os.path.exists(song_path):
         bot.reply_to(message, "Sorry, couldn't find the downloaded song.")
