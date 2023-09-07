@@ -5,6 +5,8 @@ import logging
 from dotenv import load_dotenv
 import sqlite3
 import datetime
+import threading
+import time
 
 # Load environment variables
 load_dotenv()
@@ -55,8 +57,29 @@ def extract_song_details_from_output(output):
         return singer, song_name
     return None, None
 
+# Shared variable
+should_continue_sending_messages = True
+
+# Event to signal the thread
+stop_event = threading.Event()
+
+def send_periodic_message(chat_id):
+    """Send a periodic message every 5 seconds."""
+    while not stop_event.is_set():
+        bot.send_message(chat_id, "Please be patient, your song is being processed...")
+        stop_event.wait(5)  # Wait for 5 seconds or until the event is set
+
+
+
+
 @bot.message_handler(func=lambda message: True)
 def handle_song_link(message):
+    global should_continue_sending_messages
+    # Reset the flag
+    should_continue_sending_messages = True
+    
+    # Start the periodic message thread
+    threading.Thread(target=send_periodic_message, args=(message.chat.id,)).start()
     # Create a new connection and cursor for this thread
     conn_local = sqlite3.connect('songs.db')
     cursor_local = conn_local.cursor()
@@ -90,5 +113,9 @@ def handle_song_link(message):
     conn_local.commit()
     conn_local.close()  # Close the connection
 
+    # # Stop sending periodic messages
+    # should_continue_sending_messages = False
+    # Stop sending periodic messages
+    stop_event.set()
 
 bot.polling(none_stop=True)
