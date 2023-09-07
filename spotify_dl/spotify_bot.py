@@ -1,9 +1,10 @@
 import telebot
 import os
 import re
-import boto3
 import logging
 from dotenv import load_dotenv
+import sqlite3
+import datetime
 
 # Load environment variables
 load_dotenv()
@@ -14,9 +15,22 @@ bot_token = os.getenv('BOT_Spotify_TOKEN')
 # Initialize the bot
 bot = telebot.TeleBot(bot_token)
 
-# AWS S3 Configuration
-S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
-s3 = boto3.client('s3')
+# SQLite Configuration
+conn = sqlite3.connect('songs.db')
+cursor = conn.cursor()
+
+# Create table if it doesn't exist with an added timestamp column
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS songs (
+    id INTEGER PRIMARY KEY,
+    user_id TEXT,
+    user_name TEXT,
+    song_name TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+''')
+conn.commit()
+conn.close()  # Close the initial connection
 
 # Set up logging
 logging.basicConfig(filename='telegram_bot.log', level=logging.INFO, format='%(asctime)s - %(message)s')
@@ -43,6 +57,10 @@ def extract_song_details_from_output(output):
 
 @bot.message_handler(func=lambda message: True)
 def handle_song_link(message):
+    # Create a new connection and cursor for this thread
+    conn_local = sqlite3.connect('songs.db')
+    cursor_local = conn_local.cursor()
+
     link = message.text
     result = os.popen(f'python -m spotdl {link}').read()
     singer, song_path = extract_song_details_from_output(result)
@@ -58,17 +76,19 @@ def handle_song_link(message):
         bot.reply_to(message, "Sorry, couldn't find the downloaded song.")
         return
 
-    # Upload the song to AWS S3
-    s3.upload_file(song_path, S3_BUCKET_NAME, song_path)
-
-    # Notify user of the upload
-    bot.reply_to(message, f"Song uploaded to S3: {song_path}")
-
     # Send the song back to the user
     with open(song_path, 'rb') as song_file:
         bot.send_audio(message.chat.id, song_file, caption=f"Here's your song: {song_path}")
 
     # Log user information and the posted link
     logger.info(f"User {message.from_user.username} (ID: {message.from_user.id}) posted link: {link}")
+
+    # Save song details to the SQLite database
+    current_timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    cursor_local.execute("INSERT INTO songs (user_id, user_name, song_name, timestamp) VALUES (?, ?, ?, ?)", 
+                (message.from_user.id, message.from_user.username, song_path, current_timestamp))
+    conn_local.commit()
+    conn_local.close()  # Close the connection
+
 
 bot.polling(none_stop=True)
