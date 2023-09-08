@@ -105,8 +105,16 @@ def handle_song_link(message):
     # Switch back to the original directory
     os.chdir(original_directory)
 
-    singer, _ = extract_song_details_from_output_v2(result)
-    song_path = get_most_recently_downloaded_file()
+    singer, song_filename = extract_song_details_from_output_v2(result)
+    if singer:
+        # Create a subdirectory for the singer if it doesn't exist
+        singer_directory = os.path.join(downloads_directory, singer)
+        if not os.path.exists(singer_directory):
+            os.makedirs(singer_directory)
+        # Move the downloaded song to the singer's directory
+        os.rename(os.path.join(downloads_directory, song_filename), os.path.join(singer_directory, song_filename))
+    
+    song_path = os.path.join(singer_directory, song_filename) if singer else get_most_recently_downloaded_file()
 
     if not song_path or not os.path.exists(song_path):
         bot.reply_to(message, "Sorry, couldn't find the downloaded song.")
