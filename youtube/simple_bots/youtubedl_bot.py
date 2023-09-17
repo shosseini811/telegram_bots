@@ -69,25 +69,27 @@ def download_video(message):
     elif instagram_match:
         post_url = instagram_match.group()
         if "/stories/" in post_url:
-            match = re.search(r"instagram\.com/stories/([^/]+)/([^/?]+)", message.text)
-            if match:
-                username = match.groups()[0]
-                story_id = match.groups()[1]
-                profile = instaloader.Profile.from_username(L.context, username)
-                stories = L.get_stories(userids=[profile.userid])
-                for story in stories:
-                    for item in story.get_items():
-                        if str(item.mediaid) == story_id:
-                            if item.is_video:
-                                filename = f"{profile.username}_story_{item.date_local}.mp4"
-                                filepath = os.path.join(os.path.abspath(download_dir), filename)
-                                video_url = item.video_url
-                                response = requests.get(video_url, stream=True)
-                                with open(filepath, 'wb') as video_file:
-                                    for chunk in response.iter_content(chunk_size=8192):
-                                        video_file.write(chunk)
-                                bot.send_video(message.chat.id, open(filepath, 'rb'), timeout=10000)
-                                return
+            bot.reply_to(message, "Downloading Stories is not supported yet.")
+
+            # match = re.search(r"instagram\.com/stories/([^/]+)/([^/?]+)", message.text)
+            # if match:
+            #     username = match.groups()[0]
+            #     story_id = match.groups()[1]
+            #     profile = instaloader.Profile.from_username(L.context, username)
+            #     stories = L.get_stories(userids=[profile.userid])
+            #     for story in stories:
+            #         for item in story.get_items():
+            #             if str(item.mediaid) == story_id:
+            #                 if item.is_video:
+            #                     filename = f"{profile.username}_story_{item.date_local}.mp4"
+            #                     filepath = os.path.join(os.path.abspath(download_dir), filename)
+            #                     video_url = item.video_url
+            #                     response = requests.get(video_url, stream=True)
+            #                     with open(filepath, 'wb') as video_file:
+            #                         for chunk in response.iter_content(chunk_size=8192):
+            #                             video_file.write(chunk)
+            #                     bot.send_video(message.chat.id, open(filepath, 'rb'), timeout=10000)
+            #                     return
 
         else:
             shortcode_match = re.search(r"instagram.com/(?:p|reel)/([^/]+)", post_url)
