@@ -1,3 +1,4 @@
+test.py
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -30,6 +31,8 @@ downloads/
 *.mp4
 .DS_Store
 test1.ipynb
+#session information using Firefox
+session-soheilhosseini82
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
